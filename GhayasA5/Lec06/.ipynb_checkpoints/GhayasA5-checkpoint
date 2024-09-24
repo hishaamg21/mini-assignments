@@ -1,0 +1,779 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "KaXHUmuvM4cH"
+   },
+   "source": [
+    "## Assignment 5: Advance pandas\n",
+    "Let's continue to use the dataset from the wine magazine used in notebook 'Colab_Lec06_advanced-pandas' to practice data transformation, grouping, and sorting.\n",
+    "\n",
+    "<img src=\"https://secure.static.meredith.com/crt/store/covers/magazines/nmo/9826_l.jpg\">"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "id": "Iv968XwaM4cI",
+    "outputId": "8b673ae1-7dea-4a06-f5fa-041b5873d6ce"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>country</th>\n",
+       "      <th>description</th>\n",
+       "      <th>designation</th>\n",
+       "      <th>points</th>\n",
+       "      <th>price</th>\n",
+       "      <th>province</th>\n",
+       "      <th>region_1</th>\n",
+       "      <th>region_2</th>\n",
+       "      <th>taster_name</th>\n",
+       "      <th>taster_twitter_handle</th>\n",
+       "      <th>title</th>\n",
+       "      <th>variety</th>\n",
+       "      <th>winery</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Aromas include tropical fruit, broom, brimston...</td>\n",
+       "      <td>Vulkà Bianco</td>\n",
+       "      <td>87</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Sicily &amp; Sardinia</td>\n",
+       "      <td>Etna</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Kerin O’Keefe</td>\n",
+       "      <td>@kerinokeefe</td>\n",
+       "      <td>Nicosia 2013 Vulkà Bianco  (Etna)</td>\n",
+       "      <td>White Blend</td>\n",
+       "      <td>Nicosia</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Portugal</td>\n",
+       "      <td>This is ripe and fruity, a wine that is smooth...</td>\n",
+       "      <td>Avidagos</td>\n",
+       "      <td>87</td>\n",
+       "      <td>15.0</td>\n",
+       "      <td>Douro</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Roger Voss</td>\n",
+       "      <td>@vossroger</td>\n",
+       "      <td>Quinta dos Avidagos 2011 Avidagos Red (Douro)</td>\n",
+       "      <td>Portuguese Red</td>\n",
+       "      <td>Quinta dos Avidagos</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>US</td>\n",
+       "      <td>Tart and snappy, the flavors of lime flesh and...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>87</td>\n",
+       "      <td>14.0</td>\n",
+       "      <td>Oregon</td>\n",
+       "      <td>Willamette Valley</td>\n",
+       "      <td>Willamette Valley</td>\n",
+       "      <td>Paul Gregutt</td>\n",
+       "      <td>@paulgwine</td>\n",
+       "      <td>Rainstorm 2013 Pinot Gris (Willamette Valley)</td>\n",
+       "      <td>Pinot Gris</td>\n",
+       "      <td>Rainstorm</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>US</td>\n",
+       "      <td>Pineapple rind, lemon pith and orange blossom ...</td>\n",
+       "      <td>Reserve Late Harvest</td>\n",
+       "      <td>87</td>\n",
+       "      <td>13.0</td>\n",
+       "      <td>Michigan</td>\n",
+       "      <td>Lake Michigan Shore</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Alexander Peartree</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>St. Julian 2013 Reserve Late Harvest Riesling ...</td>\n",
+       "      <td>Riesling</td>\n",
+       "      <td>St. Julian</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>US</td>\n",
+       "      <td>Much like the regular bottling from 2012, this...</td>\n",
+       "      <td>Vintner's Reserve Wild Child Block</td>\n",
+       "      <td>87</td>\n",
+       "      <td>65.0</td>\n",
+       "      <td>Oregon</td>\n",
+       "      <td>Willamette Valley</td>\n",
+       "      <td>Willamette Valley</td>\n",
+       "      <td>Paul Gregutt</td>\n",
+       "      <td>@paulgwine</td>\n",
+       "      <td>Sweet Cheeks 2012 Vintner's Reserve Wild Child...</td>\n",
+       "      <td>Pinot Noir</td>\n",
+       "      <td>Sweet Cheeks</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    country                                        description  \\\n",
+       "0     Italy  Aromas include tropical fruit, broom, brimston...   \n",
+       "1  Portugal  This is ripe and fruity, a wine that is smooth...   \n",
+       "2        US  Tart and snappy, the flavors of lime flesh and...   \n",
+       "3        US  Pineapple rind, lemon pith and orange blossom ...   \n",
+       "4        US  Much like the regular bottling from 2012, this...   \n",
+       "\n",
+       "                          designation  points  price           province  \\\n",
+       "0                        Vulkà Bianco      87    NaN  Sicily & Sardinia   \n",
+       "1                            Avidagos      87   15.0              Douro   \n",
+       "2                                 NaN      87   14.0             Oregon   \n",
+       "3                Reserve Late Harvest      87   13.0           Michigan   \n",
+       "4  Vintner's Reserve Wild Child Block      87   65.0             Oregon   \n",
+       "\n",
+       "              region_1           region_2         taster_name  \\\n",
+       "0                 Etna                NaN       Kerin O’Keefe   \n",
+       "1                  NaN                NaN          Roger Voss   \n",
+       "2    Willamette Valley  Willamette Valley        Paul Gregutt   \n",
+       "3  Lake Michigan Shore                NaN  Alexander Peartree   \n",
+       "4    Willamette Valley  Willamette Valley        Paul Gregutt   \n",
+       "\n",
+       "  taster_twitter_handle                                              title  \\\n",
+       "0          @kerinokeefe                  Nicosia 2013 Vulkà Bianco  (Etna)   \n",
+       "1            @vossroger      Quinta dos Avidagos 2011 Avidagos Red (Douro)   \n",
+       "2           @paulgwine       Rainstorm 2013 Pinot Gris (Willamette Valley)   \n",
+       "3                   NaN  St. Julian 2013 Reserve Late Harvest Riesling ...   \n",
+       "4           @paulgwine   Sweet Cheeks 2012 Vintner's Reserve Wild Child...   \n",
+       "\n",
+       "          variety               winery  \n",
+       "0     White Blend              Nicosia  \n",
+       "1  Portuguese Red  Quinta dos Avidagos  \n",
+       "2      Pinot Gris            Rainstorm  \n",
+       "3        Riesling           St. Julian  \n",
+       "4      Pinot Noir         Sweet Cheeks  "
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "csvurl=\"https://gist.githubusercontent.com/clairehq/\" + \\\n",
+    "        \"79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "import pandas as pd\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "wine.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "B5icW1ooM4cK"
+   },
+   "source": [
+    "#### Question 1: ####  \n",
+    "What is the mean of the points column?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "id": "zfLRcH-QNZk8"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "88.43403716087269\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/\" + \\\n",
+    "        \"79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Calculate the mean of the 'points' column\n",
+    "mean_points = wine['points'].mean()\n",
+    "\n",
+    "# Display the mean\n",
+    "print(mean_points)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "xgUNI-hfM4cK"
+   },
+   "source": [
+    "#### Question 2: ####  \n",
+    "How many countries are present in this dataset? (Only count each country once)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "id": "3VtO-ngdNau1"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "41\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Count the number of unique countries\n",
+    "num_countries = wine['country'].nunique()\n",
+    "\n",
+    "# Display the number of unique countries\n",
+    "print(num_countries)\n",
+    " "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "o0LDb6ahM4cL"
+   },
+   "source": [
+    "#### Question 3: ####\n",
+    "How many times does each country appeared in this dataset? Show each country and the corresponding count (show counts in ascending order)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {
+    "id": "tLZ7v1RYNdDm"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Bosnia and Herzegovina        1\n",
+      "Armenia                       1\n",
+      "Slovakia                      1\n",
+      "Switzerland                   4\n",
+      "Luxembourg                    4\n",
+      "India                         4\n",
+      "Ukraine                       5\n",
+      "Macedonia                     6\n",
+      "Czech Republic                6\n",
+      "Cyprus                        6\n",
+      "Serbia                        7\n",
+      "Peru                          8\n",
+      "Morocco                      11\n",
+      "Lebanon                      20\n",
+      "Moldova                      30\n",
+      "Brazil                       31\n",
+      "Mexico                       31\n",
+      "England                      36\n",
+      "Georgia                      37\n",
+      "Slovenia                     39\n",
+      "Turkey                       43\n",
+      "Croatia                      44\n",
+      "Uruguay                      61\n",
+      "Hungary                      61\n",
+      "Romania                      67\n",
+      "Bulgaria                     68\n",
+      "Canada                      108\n",
+      "Greece                      242\n",
+      "Israel                      259\n",
+      "New Zealand                 733\n",
+      "South Africa                737\n",
+      "Germany                    1051\n",
+      "Australia                  1177\n",
+      "Austria                    1635\n",
+      "Argentina                  1907\n",
+      "Chile                      2258\n",
+      "Portugal                   2963\n",
+      "Spain                      3409\n",
+      "Italy                     10005\n",
+      "France                    11174\n",
+      "US                        27177\n",
+      "Name: country, dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Count the occurrences of each country and sort them in ascending order\n",
+    "country_counts = wine['country'].value_counts(ascending=True)\n",
+    "\n",
+    "# Display the result\n",
+    "print(country_counts)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "OpkB90HkM4cL"
+   },
+   "source": [
+    "#### Question 4: ####\n",
+    "Create a variable `adjusted_price` containing the adjusted price which is the price subtracted by the average price. *This is called **\"centering\" transformation** - a method commonly used in the preprocessing step before applying various machine learning algorithms.*"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {
+    "id": "PiNrXHhMNeTD"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   price  adjusted_price\n",
+      "0    NaN             NaN\n",
+      "1   15.0      -20.232932\n",
+      "2   14.0      -21.232932\n",
+      "3   13.0      -22.232932\n",
+      "4   65.0       29.767068\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Calculate the average price\n",
+    "average_price = wine['price'].mean()\n",
+    "\n",
+    "# Create the 'adjusted_price' by subtracting the average price from the original price\n",
+    "wine['adjusted_price'] = wine['price'] - average_price\n",
+    "\n",
+    "# Display the first few rows of price and adjusted_price\n",
+    "print(wine[['price', 'adjusted_price']].head())\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "AkOtVGS6M4cL"
+   },
+   "source": [
+    "#### Question 5: ####\n",
+    "What is the title of the wine that has the highest points-to-price ratio in the dataset?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {
+    "id": "M493qpX7NfjD"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Bandit NV Merlot (California)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Create a new column 'points_to_price_ratio' which is the ratio of points to price\n",
+    "wine['points_to_price_ratio'] = wine['points'] / wine['price']\n",
+    "\n",
+    "# Find the row with the highest points-to-price ratio\n",
+    "highest_ratio_wine = wine.loc[wine['points_to_price_ratio'].idxmax()]\n",
+    "\n",
+    "# Get the title of the wine with the highest points-to-price ratio\n",
+    "highest_ratio_wine_title = highest_ratio_wine['title']\n",
+    "\n",
+    "# Display the result\n",
+    "print(highest_ratio_wine_title)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "Zqt78i-eM4cL"
+   },
+   "source": [
+    "#### Question 6: ####\n",
+    "Create a series `flavor_counts` that contains two values: the number of wines that has the word \"tart\" in the `description` column and the number of wines that has the word \"berries\" in the `description` column. The index of the Series should be \"Tart\" and \"Berries\" for the corresponding values."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {
+    "id": "uzqdreKSM4cM"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Tart       4424\n",
+      "Berries    3512\n",
+      "dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Count the number of wines with the word \"tart\" in the description\n",
+    "tart_count = wine['description'].str.contains(\"tart\", case=False, na=False).sum()\n",
+    "\n",
+    "# Count the number of wines with the word \"berries\" in the description\n",
+    "berries_count = wine['description'].str.contains(\"berries\", case=False, na=False).sum()\n",
+    "\n",
+    "# Create a Series with the counts\n",
+    "flavor_counts = pd.Series([tart_count, berries_count], index=[\"Tart\", \"Berries\"])\n",
+    "\n",
+    "# Display the result\n",
+    "print(flavor_counts)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "wSVdmOw9M4cM"
+   },
+   "source": [
+    "#### Question 7: ####\n",
+    "Let's convert the points into simple star ratings. A score of 90 or higher counts as 3 stars, a score of at least 80 but less than 90 is 2 stars. Any other score is 1 star.\n",
+    "\n",
+    "Also, any wines from France should automatically get 3 stars, regardless of points.\n",
+    "\n",
+    "Add this new column `star_ratings` to the dataframe with the number of stars for each wine in the dataset."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {
+    "id": "yOucjOJZM4cN"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "    country  points  star_ratings\n",
+      "0     Italy      87             2\n",
+      "1  Portugal      87             2\n",
+      "2        US      87             2\n",
+      "3        US      87             2\n",
+      "4        US      87             2\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Function to assign star ratings based on points and country\n",
+    "def star_rating(row):\n",
+    "    if row['country'] == 'France':\n",
+    "        return 3\n",
+    "    elif row['points'] >= 90:\n",
+    "        return 3\n",
+    "    elif row['points'] >= 80:\n",
+    "        return 2\n",
+    "    else:\n",
+    "        return 1\n",
+    "\n",
+    "# Apply the function to create a new 'star_ratings' column\n",
+    "wine['star_ratings'] = wine.apply(star_rating, axis=1)\n",
+    "\n",
+    "# Display the first few rows to verify\n",
+    "print(wine[['country', 'points', 'star_ratings']].head())\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "v9btZBA6M4cN"
+   },
+   "source": [
+    "#### Question 8: ####\n",
+    "Who are the most common wine reviewers in the dataset? Create a Series whose index is the taster_twitter_handle category from the dataset, and whose values count how many reviews each person wrote."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {
+    "id": "dqsUgtGBNiQZ"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "@vossroger          13045\n",
+      "@wineschach          7752\n",
+      "@kerinokeefe         5313\n",
+      "@paulgwine           4851\n",
+      "@vboone              4696\n",
+      "@mattkettmann        3035\n",
+      "@JoeCz               2605\n",
+      "@wawinereport        2358\n",
+      "@gordone_cellars     2032\n",
+      "@AnneInVino          1769\n",
+      "@laurbuzz             938\n",
+      "@suskostrzewa         593\n",
+      "@worldwineguys        465\n",
+      "@bkfiona               11\n",
+      "@winewchristina         4\n",
+      "Name: taster_twitter_handle, dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Count the number of reviews for each taster (based on taster_twitter_handle)\n",
+    "reviewer_counts = wine['taster_twitter_handle'].value_counts()\n",
+    "\n",
+    "# Display the result\n",
+    "print(reviewer_counts)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "rIO81pKrM4cN"
+   },
+   "source": [
+    "#### Question 9: ####\n",
+    "What combination of countries and varieties are most common? Create a Series whose index is a MultiIndexof {country, variety} pairs. For example, a pinot noir produced in the US should map to {\"US\", \"Pinot Noir\"}. Sort the values in the Series in descending order based on wine count."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {
+    "id": "4Is2muZjNjxd"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "country  variety                 \n",
+      "US       Pinot Noir                  4918\n",
+      "         Cabernet Sauvignon          3649\n",
+      "         Chardonnay                  3412\n",
+      "France   Bordeaux-style Red Blend    2380\n",
+      "Italy    Red Blend                   1870\n",
+      "                                     ... \n",
+      "         Torbato                        1\n",
+      "         Vespaiolo                      1\n",
+      "         Vespolina                      1\n",
+      "         Vitovska                       1\n",
+      "Uruguay  Tempranillo-Tannat             1\n",
+      "Length: 1304, dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Create a MultiIndex based on country and variety, then count occurrences\n",
+    "country_variety_counts = wine.groupby(['country', 'variety']).size().sort_values(ascending=False)\n",
+    "\n",
+    "# Display the result\n",
+    "print(country_variety_counts)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "C6sj-ABlM4cO"
+   },
+   "source": [
+    "#### Question 10 #####\n",
+    "Create a Series whose index is reviewers and whose values is the average score given out by that reviewer. Hint: you will need the `taster_name` and `points` columns."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {
+    "id": "QFseCkVwNlAk"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "taster_name\n",
+      "Alexander Peartree    86.014286\n",
+      "Anna Lee C. Iijima    88.380506\n",
+      "Anne Krebiehl MW      90.587903\n",
+      "Carrie Dykes          86.644444\n",
+      "Christina Pickard     89.500000\n",
+      "Fiona Adams           87.090909\n",
+      "Jeff Jenssen          88.273504\n",
+      "Jim Gordon            88.604331\n",
+      "Joe Czerwinski        88.519770\n",
+      "Kerin O’Keefe         88.827969\n",
+      "Lauren Buzzeo         87.831557\n",
+      "Matt Kettmann         90.021087\n",
+      "Michael Schachner     86.904541\n",
+      "Mike DeSimone         89.030303\n",
+      "Paul Gregutt          89.095032\n",
+      "Roger Voss            88.678957\n",
+      "Sean P. Sullivan      88.666243\n",
+      "Susan Kostrzewa       86.408094\n",
+      "Virginie Boone        89.229557\n",
+      "Name: points, dtype: float64\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "# Load the dataset\n",
+    "csvurl = \"https://gist.githubusercontent.com/clairehq/79acab35be50eaf1c383948ed3fd1129/raw/407a02139ae1e134992b90b4b2b8c329b3d73a6a/winemag-data-130k-v2.csv\"\n",
+    "wine = pd.read_csv(csvurl)\n",
+    "\n",
+    "# Drop the first unnamed column\n",
+    "wine.drop(wine.columns[0], axis=\"columns\", inplace=True)\n",
+    "\n",
+    "# Calculate the average score (points) given by each reviewer (taster_name)\n",
+    "reviewer_avg_scores = wine.groupby('taster_name')['points'].mean()\n",
+    "\n",
+    "# Display the result\n",
+    "print(reviewer_avg_scores)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "provenance": []
+  },
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
